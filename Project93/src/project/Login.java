@@ -65,6 +65,12 @@ public class Login {
             }
         });
         panel.add(btnlogin);
+        
+        ImageIcon icon = new ImageIcon("F:\\project1101093\\image.png");
+        JLabel lblNewLabel = new JLabel(icon);
+        lblNewLabel.setBounds(170, 10, 169, 136);
+        panel.add(lblNewLabel);
+        
     }
 
     private void onLogin() {
@@ -83,7 +89,4 @@ public class Login {
             JOptionPane.showMessageDialog(frame, "Invalid username or password");
         }
     }
-
-    
-    
 }

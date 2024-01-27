@@ -6,9 +6,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,9 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import static project.reserveQueue.queueDataQueue;
+import java.awt.List;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 
-public class Queue {
+public class Queue extends reserveQueue{
     private reserveQueue reserveQueue;
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -37,12 +37,12 @@ public class Queue {
         });
     }
     
-    private static void showQueueList(JTextArea Queuelist) {
+    public static void showQueueList(JTextArea Queuelist) {
     	
-        Queuelist.setText("Queue List:"+queueDataQueue.size()+"\n");
+        Queuelist.setText("           Queue List:"+queueDataQueue.size()+"\n           -------------------------------\n");
         
         for (QueueData queueData : queueDataQueue) {
-            Queuelist.append("Queue ID: " + queueData.getQueueID() + "\nNumber of People: " + queueData.getNumberOfPeople() + "\n\n");
+            Queuelist.append("           "+"Queue ID: " + queueData.getQueueID() +"\n"+"           "+"Name Customer:"+queueData.getname()+"\n"+"           "+"Number of People: " + queueData.getNumberOfPeople()+"\n"+"           "+"status:"+queueData.getstatus()+"\n"+"           "+"remaining: "+queueData.getremaining()+"\n"+"        "+"-------------------------------\n");
             
         }
     }
@@ -51,33 +51,6 @@ public class Queue {
         initialize();
       
 		
-    }
-    private void storeInDatabase(QueueData queueData) {
-        try {
-            Connection connection = DatabaseConnection.getConnection();
-            String query = "INSERT INTO project93.queuecompile (idQueue, person) VALUES (?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(2, queueData.getQueueID());
-                preparedStatement.setInt(3, queueData.getNumberOfPeople());
-                preparedStatement.executeUpdate();
-            }
-            connection.close();
-            System.out.println("Data stored in the database.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private void dequeue(JTextArea resultTextArea) {
-        if (!queueDataQueue.isEmpty()) {
-            QueueData dequeuedData = queueDataQueue.poll();
-            resultTextArea.append("Dequeued Queue ID: " + dequeuedData.getQueueID() +
-                    "\nNumber of People: " + dequeuedData.getNumberOfPeople() + "\n\n");
-
-            // Store the dequeued data in the database
-            storeInDatabase(dequeuedData);
-        } else {
-            resultTextArea.append("Queue is empty. Cannot dequeue.\n\n");
-        }
     }
 
     private void initialize() {
@@ -104,7 +77,7 @@ public class Queue {
                 switchToReserveQueuePanel();
             }
         });
-        btnReserve.setBounds(354, 37, 151, 58);
+        btnReserve.setBounds(340, 25, 193, 48);
         queuePanel.add(btnReserve);
     }
 
@@ -116,14 +89,20 @@ public class Queue {
         JLabel lblNewLabel = new JLabel("Queue list");
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
         lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        lblNewLabel.setBounds(50, -24, 168, 88);
+        lblNewLabel.setBounds(44, -20, 168, 88);
         queuePanel.add(lblNewLabel);
 
         final JTextArea Queuelist = new JTextArea();
         Queuelist.setEditable(false);
-        Queuelist.setBounds(26, 37, 233, 317);
+        Queuelist.setBounds(26, 48, 233, 317);
         queuePanel.add(Queuelist);
         showQueueList(Queuelist);
+        Queuelist.setLineWrap(true);
+        
+        JScrollPane scrollPane = new JScrollPane(Queuelist);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // แสดงแถบเลื่อนแนวตั้งเสมอ
+        scrollPane.setBounds(26, 48, 233, 317);
+        queuePanel.add(scrollPane);
         
         JButton btnRefresh = new JButton("refresh");
         btnRefresh.addActionListener(new ActionListener() {
@@ -133,18 +112,42 @@ public class Queue {
         	}
         });
         btnRefresh.setBackground(Color.WHITE);
-        btnRefresh.setBounds(354, 129, 151, 58);
+        btnRefresh.setBounds(340, 141, 193, 48);
         queuePanel.add(btnRefresh);
         
         JButton btnpass = new JButton("pass");
         btnpass.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		dequeue(null);
+        		dequeue(Queuelist);
         	}
         });
         btnpass.setBackground(Color.WHITE);
-        btnpass.setBounds(354, 306, 151, 58);
+        btnpass.setBounds(340, 261, 193, 48);
         queuePanel.add(btnpass);
+        
+        JButton btncanel = new JButton("canel");
+        btncanel.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		CanelQueue Canelnew = new CanelQueue();
+        		
+        		Canelnew.setVisible(true);
+        	}
+        });
+        btncanel.setBackground(Color.WHITE);
+        btncanel.setBounds(340, 319, 193, 48);
+        queuePanel.add(btncanel);
+        
+        JButton btneditStatus = new JButton("EditStatus");
+        btneditStatus.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		Editwindow editwindow = new Editwindow();
+        		editwindow.setVisible(true);
+        	}
+        });
+        btneditStatus.setBackground(Color.WHITE);
+        btneditStatus.setBounds(340, 83, 193, 48);
+        queuePanel.add(btneditStatus);
 
         return queuePanel;
     }
