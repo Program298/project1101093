@@ -6,6 +6,11 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -77,7 +82,7 @@ public class Queue extends reserveQueue{
                 switchToReserveQueuePanel();
             }
         });
-        btnReserve.setBounds(340, 25, 193, 48);
+        btnReserve.setBounds(297, 37, 236, 48);
         queuePanel.add(btnReserve);
     }
 
@@ -109,10 +114,11 @@ public class Queue extends reserveQueue{
         	public void actionPerformed(ActionEvent e) {
         		
         		showQueueList(Queuelist);
+        		saveQueueDataToDatabase();
         	}
         });
         btnRefresh.setBackground(Color.WHITE);
-        btnRefresh.setBounds(340, 141, 193, 48);
+        btnRefresh.setBounds(297, 153, 236, 48);
         queuePanel.add(btnRefresh);
         
         JButton btnpass = new JButton("pass");
@@ -121,8 +127,8 @@ public class Queue extends reserveQueue{
         		dequeue(Queuelist);
         	}
         });
-        btnpass.setBackground(Color.WHITE);
-        btnpass.setBounds(340, 261, 193, 48);
+        btnpass.setBackground(new Color(0, 255, 0));
+        btnpass.setBounds(297, 317, 119, 48);
         queuePanel.add(btnpass);
         
         JButton btncanel = new JButton("canel");
@@ -134,8 +140,8 @@ public class Queue extends reserveQueue{
         		Canelnew.setVisible(true);
         	}
         });
-        btncanel.setBackground(Color.WHITE);
-        btncanel.setBounds(340, 319, 193, 48);
+        btncanel.setBackground(new Color(255, 128, 128));
+        btncanel.setBounds(424, 317, 109, 48);
         queuePanel.add(btncanel);
         
         JButton btneditStatus = new JButton("EditStatus");
@@ -146,8 +152,19 @@ public class Queue extends reserveQueue{
         	}
         });
         btneditStatus.setBackground(Color.WHITE);
-        btneditStatus.setBounds(340, 83, 193, 48);
+        btneditStatus.setBounds(424, 95, 109, 48);
         queuePanel.add(btneditStatus);
+        
+        JButton btnQRcode = new JButton("QRcode");
+        btnQRcode.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		CreateQRcode createQRcode = new CreateQRcode();
+        		createQRcode.setVisible(true);
+        	}
+        });
+        btnQRcode.setBackground(Color.WHITE);
+        btnQRcode.setBounds(297, 95, 109, 48);
+        queuePanel.add(btnQRcode);
 
         return queuePanel;
     }
@@ -155,4 +172,44 @@ public class Queue extends reserveQueue{
     private void switchToReserveQueuePanel() {
         cardLayout.show(mainPanel, "ReserveQueuePanel");
     }
+    
+    
+    private static void saveQueueDataToDatabase() {
+       
+        String url = "jdbc:mysql://localhost:3306/project93";
+        String username = "root";
+        String password = "Ss292546";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+          
+            for (QueueData queueData : queueDataQueue) {
+           
+                String sql = "INSERT INTO queuedata (queueID, name, numberOfPeople, status, remaining) " +
+                             "VALUES (?, ?, ?, ?, ?) " +
+                             "ON DUPLICATE KEY UPDATE " +
+                             "name = VALUES(name), numberOfPeople = VALUES(numberOfPeople), " +
+                             "status = VALUES(status), remaining = VALUES(remaining)";
+                             
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+   
+                    preparedStatement.setString(1, queueData.getQueueID());
+                    preparedStatement.setString(2, queueData.getname());
+                    preparedStatement.setInt(3, queueData.getNumberOfPeople());
+                    preparedStatement.setString(4, queueData.getstatus());
+                    preparedStatement.setInt(5, queueData.getremaining());
+
+          
+                    preparedStatement.executeUpdate();
+                    
+                    System.out.println("Data saved or updated successfully in the database: " + queueData);
+                }
+            }
+        } catch (SQLException e) {
+    
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

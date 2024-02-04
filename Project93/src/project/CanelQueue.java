@@ -16,6 +16,10 @@ import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class CanelQueue extends reserveQueue{
@@ -76,25 +80,54 @@ public class CanelQueue extends reserveQueue{
 		
 		
 		JButton btncanel = new JButton("canel");
+	
 		btncanel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			     String selectedQueueID = (String) comboBoxIdqueue.getSelectedItem();
-
-			        // ตรวจสอบว่ามีการเลือก queueID หรือไม่
-			        if (selectedQueueID != null) {
-			            // เรียกใช้เมทอด cancelQueue() ของ reserveQueue โดยใช้ queueID ที่เลือก
-			            reserveQueue.cancelQueue(selectedQueueID);
-			            Queue.main(null);
-			        } else {
-			            // ใส่โค้ดที่ต้องการให้ทำงานเมื่อไม่ได้เลือก queueID
-			            // เช่นแสดงข้อความแจ้งเตือน
-			        	JOptionPane.showMessageDialog(frame,"Please select a queue to cancel.");
-			        }
-
-				
-			}
+		    public void actionPerformed(ActionEvent e) {
+		     
+		        if (comboBoxIdqueue.getSelectedItem() != null) {
+		            String selectedQueueID = (String) comboBoxIdqueue.getSelectedItem();
+		            
+		        
+		            String url = "jdbc:mysql://localhost:3306/project93";
+		            String username = "root";
+		            String password = "Ss292546";
+		            
+		            try (Connection connection = DriverManager.getConnection(url, username, password)) {
+		             
+		                String sql = "DELETE FROM queuedata WHERE queueID = ?";
+		                
+		                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+		                 
+		                    preparedStatement.setString(1, selectedQueueID);
+		                    
+		                   
+		                    int rowsAffected = preparedStatement.executeUpdate();
+		                    
+		                    if (rowsAffected > 0) {
+		                        JOptionPane.showMessageDialog(frame, "Queue canceled successfully.");
+		                        
+		                
+		                        comboBoxIdqueue.removeItem(selectedQueueID);
+		                        
+		        
+		                        reserveQueue.cancelQueue(selectedQueueID);
+		                        
+		                   
+		                        Queue.main(null);
+		                    } else {
+		                        JOptionPane.showMessageDialog(frame, "Failed to cancel queue.");
+		                    }
+		                }
+		            } catch (SQLException ex) {
+		                ex.printStackTrace();
+		                JOptionPane.showMessageDialog(frame, "An error occurred while canceling queue.");
+		            }
+		        } else {
+		            JOptionPane.showMessageDialog(frame, "Please select a queue to cancel.");
+		        }
+		    }
 		});
+
 		btncanel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btncanel.setBounds(162, 166, 97, 36);
 		panel.add(btncanel);

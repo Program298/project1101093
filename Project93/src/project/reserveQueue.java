@@ -47,20 +47,45 @@ public class reserveQueue extends JPanel {
              QueueData data = queueDataQueue.poll();
              
              storeInDatabase(data);
-             
+             deleteTopFromDatabase();
          } else {
              Queuelist.append("     "+"Queue is empty. Cannot dequeue.\n\n");
          }
          updateStatus();
      }
      
+     private static void deleteTopFromDatabase() {
+   
+    	    String url = "jdbc:mysql://localhost:3306/project93";
+    	    String username = "root";
+    	    String password = "Ss292546";
+
+    	    try (Connection connection = DriverManager.getConnection(url, username, password)) {
+    	       
+    	        String sql = "DELETE FROM queuedata ORDER BY queueID LIMIT 1";
+
+    	        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    	          
+    	            int rowsAffected = preparedStatement.executeUpdate();
+
+    	            if (rowsAffected > 0) {
+    	                System.out.println("Top data deleted successfully from the database.");
+    	            } else {
+    	                System.out.println("Failed to delete top data from the database.");
+    	            }
+    	        }
+    	    } catch (SQLException e) {
+    	        e.printStackTrace();
+    	        System.out.println("An error occurred while deleting top data from the database.");
+    	    }
+    	}  
      private static void updateStatus() {
          for (int i = 0; i < queueDataQueue.size(); i++) {
         	 QueueData data = queueDataQueue.get(i);
              if ("CanelQueue".equals(data.status)) {
-                 // ถ้าสถานะเป็น "ยกเลิก" ให้นำคิวออก
+                 
             	 queueDataQueue.remove(data);
-                 i--;  // ลดค่า i เนื่องจากคิวถูกนำออก
+                 i--; 
              } else {
                  if (i == 0) {
                      data.status = "yourturn";
@@ -107,7 +132,7 @@ public class reserveQueue extends JPanel {
     	   
     	        String sql = "INSERT INTO queuecompile (idQueue, person, compilecolData) VALUES (?, ?, ?)";
 
-    	        // Creating a prepared statement
+    	       
     	        PreparedStatement preparedStatement = connection.prepareStatement(sql);
     	        preparedStatement.setString(1, data.getQueueID());
     	        preparedStatement.setInt(2, data.getNumberOfPeople());
@@ -115,10 +140,10 @@ public class reserveQueue extends JPanel {
     	        java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
     	        preparedStatement.setTimestamp(3, currentTimestamp);
 
-    	        // Executing the query
+    	    
     	        preparedStatement.executeUpdate();
 
-    	        // Closing resources
+    	     
     	        preparedStatement.close();
     	        connection.close();
 
@@ -187,7 +212,7 @@ public class reserveQueue extends JPanel {
 
 	}
 	private void switchToQueuePanel() {
-        // ให้ใช้ CardLayout ที่ถูกติดตั้งใน JPanel หลักของ Queue
+  
         CardLayout cardLayout = (CardLayout) getParent().getLayout();
         cardLayout.show(getParent(), "QueuePanel");
         String numberOfPeopleStr = person.getText();
