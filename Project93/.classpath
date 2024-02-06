@@ -11,5 +11,13 @@
 	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/zxing-1.7-javase/zxing-1.7-javase.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/zxing-core-2.0/zxing-core-2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/ZXing 3.5.2.zip"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/AbsoluteLayout.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/bridj-0.6.2-windows-only.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/core-3.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/javase-3.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/slf4j-api-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/slf4j-log4j12-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/webcam-capture-0.3.12.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/QR-Code-em-Java-master/QR-Code-em-Java-master/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

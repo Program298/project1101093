@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -28,16 +29,16 @@ import java.awt.Color;
 
 
 
-public class reserveQueue extends JPanel {
+public class ReserveQueue extends JPanel {
 	
 	
 	public static LinkedList<QueueData> queueDataQueue = new LinkedList<>();
     private static int currentQueueID = 1;
     
-     private static String generateQueueID() {
+    public static String generateQueueID() {
         return "Q" + currentQueueID++;
     }
-     private static void enqueueQueueData(QueueData queueData) {
+    public static void enqueue(QueueData queueData) {
         queueDataQueue.add(queueData);
         System.out.println("Queue data added to the queue. Queue ID: " + queueData.getQueueID());
         updateStatus();
@@ -46,15 +47,15 @@ public class reserveQueue extends JPanel {
          if (!queueDataQueue.isEmpty()) {
              QueueData data = queueDataQueue.poll();
              
-             storeInDatabase(data);
-             deleteTopFromDatabase();
+             queuecompile(data);
+             deleteData();
          } else {
              Queuelist.append("     "+"Queue is empty. Cannot dequeue.\n\n");
          }
          updateStatus();
      }
      
-     private static void deleteTopFromDatabase() {
+     private static void deleteData() {
    
     	    String url = "jdbc:mysql://localhost:3306/project93";
     	    String username = "root";
@@ -79,7 +80,9 @@ public class reserveQueue extends JPanel {
     	        System.out.println("An error occurred while deleting top data from the database.");
     	    }
     	}  
-     private static void updateStatus() {
+     
+     
+     public static void updateStatus() {
          for (int i = 0; i < queueDataQueue.size(); i++) {
         	 QueueData data = queueDataQueue.get(i);
              if ("CanelQueue".equals(data.status)) {
@@ -103,6 +106,7 @@ public class reserveQueue extends JPanel {
              if (data.queueID == queueID) {
                  data.status = "CanelQueue";
                  updateStatus();
+                 deleteData();
                  break;
              }
          }
@@ -119,7 +123,9 @@ public class reserveQueue extends JPanel {
      }
      
      
-     private static void storeInDatabase(QueueData data) {
+     
+     
+     private static void queuecompile(QueueData data) {
     	   
     	    String Url = "jdbc:mysql://localhost:3306/project93";
     	    String username = "root";
@@ -130,7 +136,7 @@ public class reserveQueue extends JPanel {
     	        Connection connection = DriverManager.getConnection(Url, username, password);
 
     	   
-    	        String sql = "INSERT INTO queuecompile (idQueue, person, compilecolData) VALUES (?, ?, ?)";
+    	        String sql = "INSERT INTO queuecompile (idQueue, person, compilecolDate) VALUES (?, ?, ?)";
 
     	       
     	        PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -160,8 +166,11 @@ public class reserveQueue extends JPanel {
 
 	/**
 	 * Create the panel.
+	 * @param username 
 	 */
-	public reserveQueue() {
+	
+	
+	public ReserveQueue() {
 		setLayout(new CardLayout(0, 0));
 		
 		JPanel panelreserve = new JPanel();
@@ -209,31 +218,59 @@ public class reserveQueue extends JPanel {
 		lblname.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblname.setBounds(74, 146, 111, 25);
 		panelreserve.add(lblname);
-
+		
 	}
 	private void switchToQueuePanel() {
-  
-        CardLayout cardLayout = (CardLayout) getParent().getLayout();
-        cardLayout.show(getParent(), "QueuePanel");
-        String numberOfPeopleStr = person.getText();
-        String name = Name.getText();
+	    CardLayout cardLayout = (CardLayout) getParent().getLayout();
+	    cardLayout.show(getParent(), "QueuePanel");
+	    String numberOfPeopleStr = person.getText();
+	    String name = Name.getText();
 
-        if (!numberOfPeopleStr.isEmpty()) {
-            try {
-                int numberOfPeople = Integer.parseInt(numberOfPeopleStr);
-                String queueID = generateQueueID();
-                enqueueQueueData(new QueueData(queueID, numberOfPeople, name));
-                
-                
-                //resultTextArea.append("Queue ID: " + queueID + "\nNumber of People: " + numberOfPeople + "\n\n");
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid number.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Please enter the number of people.");
-        }   
-        
+	    if (!numberOfPeopleStr.isEmpty()) {
+	        try {
+	            int numberOfPeople = Integer.parseInt(numberOfPeopleStr);
+	            boolean isDuplicate = false;
+	            for (QueueData data : queueDataQueue) {
+	                if (data.getname().equals(name)) {
+	                    isDuplicate = true;
+	                    break;
+	                }
+	            }
+	            if (isDuplicate) {
+	                JOptionPane.showMessageDialog(null, "This name already exists. Please enter a different name.");
+	            } else {
+	                String queueID = generateQueueID();
+	                enqueue(new QueueData(queueID, numberOfPeople, name));
+	            }
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(null, "Please enter the number of people.");
+	    }
+	}
 
-    }
+
+
+	
+	
+	protected void processQueueData(String customerName, int customerPerson) {
+		
+	    if (customerPerson > 0) {
+	        try {
+	            String queueID = generateQueueID();
+	            enqueue(new QueueData(queueID, customerPerson, customerName));
+	            
+	         
+	            
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(null, "Please enter a valid number of people.");
+	    }
+	    
+	}
+
 	
 }

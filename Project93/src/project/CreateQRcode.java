@@ -41,18 +41,18 @@ public class CreateQRcode {
      * Create the application.
      */
     public CreateQRcode() {
-        initialize();
+    	Generate();
     }
 
     /**
      * Initialize the contents of the frame.
      */
-    private void initialize() {
+    private void Generate() {
         frame = new JFrame();
         frame.setBounds(100, 100, 450, 311);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(new CardLayout(0, 0));
-
+        frame.setTitle("QRcode");
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 240, 222));
         frame.getContentPane().add(panel, "name_41063203617400");

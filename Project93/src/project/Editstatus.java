@@ -17,7 +17,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class Editwindow extends reserveQueue{
+public class Editstatus extends ReserveQueue{
 
 	private JFrame frame;
 
@@ -28,7 +28,7 @@ public class Editwindow extends reserveQueue{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Editwindow window = new Editwindow();
+					Editstatus window = new Editstatus();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,7 +40,7 @@ public class Editwindow extends reserveQueue{
 	/**
 	 * Create the application.
 	 */
-	public Editwindow() {
+	public Editstatus() {
 		initialize();
 	}
 
@@ -52,6 +52,7 @@ public class Editwindow extends reserveQueue{
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
+		 frame.setTitle("Edit Status");
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 240, 222));
@@ -64,7 +65,7 @@ public class Editwindow extends reserveQueue{
 		lblEditstatus.setBounds(74, 0, 275, 67);
 		panel.add(lblEditstatus);
 		
-		final JComboBox comboBoxIDqueue = new JComboBox();
+		final JComboBox<String> comboBoxIDqueue = new JComboBox();
 		comboBoxIDqueue.setBounds(148, 84, 125, 29);
 		panel.add(comboBoxIDqueue);
 		
@@ -80,7 +81,7 @@ public class Editwindow extends reserveQueue{
 		comboBoxStatus.addItem("yourtrun");
 		comboBoxStatus.addItem("Waiting");
 		comboBoxStatus.addItem("service");
-		comboBoxStatus.addItem("CanelQueue");
+		comboBoxStatus.addItem("CancelQueue");
 		
 		
 		JButton btnNewEdit = new JButton("Edit");
@@ -93,7 +94,7 @@ public class Editwindow extends reserveQueue{
 		      
 		        if (selectedQueueID != null && selectedStatus != null) {
 		       
-		            reserveQueue.editQueueStatus(selectedQueueID, selectedStatus);
+		            ReserveQueue.editQueueStatus(selectedQueueID, selectedStatus);
 		        } else {
 		            
 		        	 JOptionPane.showMessageDialog(frame,"Please select Queue ID.\nPlease select a new status.");

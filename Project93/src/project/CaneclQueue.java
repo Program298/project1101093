@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
-public class CanelQueue extends reserveQueue{
+public class CaneclQueue extends ReserveQueue{
 
 	private JFrame frame;
 
@@ -33,7 +33,7 @@ public class CanelQueue extends reserveQueue{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CanelQueue window = new CanelQueue();
+					CaneclQueue window = new CaneclQueue();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -45,7 +45,7 @@ public class CanelQueue extends reserveQueue{
 	/**
 	 * Create the application.
 	 */
-	public CanelQueue() {
+	public CaneclQueue() {
 		initialize();
 	}
 
@@ -57,13 +57,14 @@ public class CanelQueue extends reserveQueue{
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
+		 frame.setTitle("Canel Queue");
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 240, 222));
 		frame.getContentPane().add(panel, "name_95623943652800");
 		panel.setLayout(null);
 		
-		JLabel lblCanelqueue = new JLabel("CanelQueue");
+		JLabel lblCanelqueue = new JLabel("CancelQueue");
 		lblCanelqueue.setHorizontalAlignment(SwingConstants.CENTER);
 		lblCanelqueue.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblCanelqueue.setBounds(75, 0, 275, 67);
@@ -79,7 +80,7 @@ public class CanelQueue extends reserveQueue{
         }
 		
 		
-		JButton btncanel = new JButton("canel");
+		JButton btncanel = new JButton("cancel");
 	
 		btncanel.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
@@ -110,10 +111,10 @@ public class CanelQueue extends reserveQueue{
 		                        comboBoxIdqueue.removeItem(selectedQueueID);
 		                        
 		        
-		                        reserveQueue.cancelQueue(selectedQueueID);
+		                        ReserveQueue.cancelQueue(selectedQueueID);
 		                        
 		                   
-		                        Queue.main(null);
+		                    
 		                    } else {
 		                        JOptionPane.showMessageDialog(frame, "Failed to cancel queue.");
 		                    }

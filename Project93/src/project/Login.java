@@ -4,12 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Login {
 
     private JFrame frame;
     private JTextField employeeid;
     private JPasswordField passwordEM;
+
+    private static final String URL = "jdbc:mysql://localhost:3306/project93";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Ss292546";
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -33,6 +42,7 @@ public class Login {
         frame.setBounds(100, 100, 549, 358);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new CardLayout(0, 0));
+        frame.setTitle("Login");
 
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 240, 222));
@@ -61,7 +71,7 @@ public class Login {
         btnlogin.setBounds(215, 258, 96, 21);
         btnlogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onLogin();
+                Login();
             }
         });
         panel.add(btnlogin);
@@ -73,13 +83,34 @@ public class Login {
         
     }
 
-    private void onLogin() {
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    private boolean isValidUser(String username, String password) {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM project93.employee WHERE IDemployee=? AND password=?")) {
+
+            statement.setString(1, username);
+            statement.setString(2, password);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void Login() {
         String username = employeeid.getText();
         String password = new String(passwordEM.getPassword());
 
-        if (DatabaseConnection.isValidUser(username, password)) {
+        if (isValidUser(username, password)) {
             JOptionPane.showMessageDialog(frame, "Login successful");
             // เรียกหน้าต่างอื่น ๆ หรือทำตามที่ต้องการหลังจาก Login สำเร็จ
+            
             frame.dispose();
 
             // สร้างหน้าต่างใหม่ (Queue)
